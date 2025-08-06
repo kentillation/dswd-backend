@@ -1,0 +1,41 @@
+{
+	"authHost": "http://localhost",
+	"authEndpoint": "/broadcasting/auth",
+	"key": "f2ff9925065555c61de5",
+	"wsHost": "127.0.0.1",
+	"wsPort": 6001,
+	"clients": [
+		{
+			"appId": "b2d628f84e8b3669",
+			"key": "de6c98f7e87c8dff57d73c4f0cb590ed"
+		}
+	],
+	"database": "sqlite",
+	"databaseConfig": {
+		"redis": {},
+		"sqlite": {
+			"databasePath": "C:/Users/KENTOY/Desktop/Kent/Projects/Software/Web Application/VAML/Kapehan/poofsa-backend-uat/database/laravel-echo-server.sqlite"
+		}
+	},
+	"forceTLS": false,
+	"devMode": true,
+	"host": null,
+	"port": "6001",
+	"protocol": "http",
+	"socketio": {},
+	"secureOptions": 67108864,
+	"sslCertPath": "",
+	"sslKeyPath": "",
+	"sslCertChainPath": "",
+	"sslPassphrase": "",
+	"subscribers": {
+		"http": true,
+		"redis": true
+	},
+	"apiOriginAllow": {
+		"allowCors": false,
+		"allowOrigin": "",
+		"allowMethods": "",
+		"allowHeaders": ""
+	}
+}
