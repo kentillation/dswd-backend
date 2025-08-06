@@ -14,8 +14,7 @@ class BenefHistoryModel extends Model
 
     protected $fillable = [
         'benefeciary_id',
-        'decsription',
-        'last_name',
+        'description',
         'manage_id',
         'user_id',
         'created_at',

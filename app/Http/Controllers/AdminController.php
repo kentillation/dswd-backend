@@ -32,8 +32,11 @@ class AdminController extends Controller
                 'tbl_benefeciaries.address_line3',
                 'tbl_benefeciaries.contact_number',
                 'tbl_benefeciaries.updated_at',
+                'tbl_gender.gender_id',
                 'tbl_gender.gender_label',
+                'tbl_bloodtype.bloodtype_id',
                 'tbl_bloodtype.bloodtype_label',
+                'tbl_category.category_id',
                 'tbl_category.category_label',
             )
                 ->join('tbl_gender', 'tbl_benefeciaries.gender_id', '=', 'tbl_gender.gender_id')
@@ -122,29 +125,30 @@ class AdminController extends Controller
     }
 
     // updateBenefeciary
-    public function updateProduct(Request $request, $product_id)
+    public function updateBenefInfo(Request $request, $benefeciary_id)
     {
         $validated = $request->validate([
-            'availability_id' => 'required|integer',
-            'branch_id' => 'required|integer',
-            'product_category_id' => 'required|integer',
-            'product_id' => 'required|integer',
-            'product_name' => 'required|string',
-            'product_price' => 'required|numeric',
-            'product_size_id' => 'required|integer',
-            'product_temp_id' => 'required|integer',
-            'shop_id' => 'required|integer',
+            'benefeciary_id' => 'required|integer',
+            'first_name' => 'required|string',
+            'middle_name' => 'required|string',
+            'last_name' => 'required|string',
+            'benef_age' => 'required|integer',
+            'address_line1' => 'required|string',
+            'address_line2' => 'required|string',
+            'address_line3' => 'required|string',
+            'contact_number' => 'required|numeric',
+            'gender_id' => 'required|integer',
+            'bloodtype_id' => 'required|integer',
+            'category_id' => 'required|integer',
         ]);
 
         try {
-            $product = BenefeciaryModel::findOrFail($product_id);
-            $originalValues = $product->getOriginal();
-            $product->update($validated);
-            $product->load(['temperature', 'category', 'availability']);
-            $newProductId = $product->product_id;
-            $shopId = $product->shop_id;
-            $branchId = $product->branch_id;
-            $userId = $request->user()->admin_id;
+            $benefeciary = BenefeciaryModel::findOrFail($benefeciary_id);
+            $originalValues = $benefeciary->getOriginal();
+            $benefeciary->update($validated);
+            $benefeciary->load(['genders', 'bloodtypes', 'categories']);
+            $newBenefId = $benefeciary->benefeciary_id;
+            $userId = Auth::user()->admin_id;
             $changes = [];
             foreach ($validated as $key => $value) {
                 if ($originalValues[$key] != $value) {
@@ -156,21 +160,19 @@ class AdminController extends Controller
             }
             $description = '';
             foreach ($changes as $field => $change) {
-                if ($field === 'product_price') {
-                    $description .= "Price: From [₱{$change['from']}] To [₱{$change['to']}]. ";
-                } elseif ($field === 'product_temp_id') {
-                    $fromTemp = GenderModel::find($change['from']);
-                    $toTemp = GenderModel::find($change['to']);
-                    $fromLabel = $fromTemp ? $fromTemp->temp_label : $change['from'];
-                    $toLabel = $toTemp ? $toTemp->temp_label : $change['to'];
-                    $description .= "Temperature: From [{$fromLabel}] To [{$toLabel}]. ";
-                } elseif ($field === 'product_size_id') {
-                    $fromSize = BloodTypeModel::find($change['from']);
-                    $toTemp = BloodTypeModel::find($change['to']);
-                    $fromLabel = $fromSize ? $fromSize->size_label : $change['from'];
-                    $toLabel = $toTemp ? $toTemp->size_label : $change['to'];
-                    $description .= "Size: From [{$fromLabel}] To [{$toLabel}]. ";
-                } elseif ($field === 'product_category_id') {
+                if ($field === 'gender_id') {
+                    $fromGender = GenderModel::find($change['from']);
+                    $toGender = GenderModel::find($change['to']);
+                    $fromLabel = $fromGender ? $fromGender->gender_label : $change['from'];
+                    $toLabel = $toGender ? $toGender->gender_label : $change['to'];
+                    $description .= "Gender: From [{$fromLabel}] To [{$toLabel}]. ";
+                } elseif ($field === 'bloodtype_id') {
+                    $fromBloodType = BloodTypeModel::find($change['from']);
+                    $toBloodType = BloodTypeModel::find($change['to']);
+                    $fromLabel = $fromBloodType ? $fromBloodType->bloodtype_label : $change['from'];
+                    $toLabel = $toBloodType ? $toBloodType->bloodtype_label : $change['to'];
+                    $description .= "Blood type: From [{$fromLabel}] To [{$toLabel}]. ";
+                } elseif ($field === 'category_id') {
                     $fromCategory = CategoryModel::find($change['from']);
                     $toCategory = CategoryModel::find($change['to']);
                     $fromLabel = $fromCategory ? $fromCategory->category_label : $change['from'];
@@ -184,23 +186,21 @@ class AdminController extends Controller
                 $description = 'No fields were updated';
             }
             BenefHistoryModel::create([
-                'product_id' => $newProductId,
-                'manage_id' => 2, // UPDATE
-                'shop_id' => $shopId,
-                'branch_id' => $branchId,
+                'benefeciary_id' => $newBenefId,
+                'manage_id' => 2,
                 'user_id' => $userId,
                 'description' => trim($description),
             ]);
             return response()->json([
                 'status' => true,
-                'message' => 'Product updated successfully',
+                'message' => 'Benefeciary info successfully updated!',
                 'updated_at' => now('Asia/Manila')->toDateTimeString(),
                 'changes' => $changes
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Error updating product!',
+                'message' => 'Error updating benefeciary info!',
                 'error' => $e->getMessage()
             ], 500);
         }
