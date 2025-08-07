@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/admin/gender-option', [AdminController:
 Route::middleware('auth:sanctum')->get('/admin/blood-type-option', [AdminController::class, 'getBloodTypes']);
 Route::middleware('auth:sanctum')->get('/admin/category-option', [AdminController::class, 'getProductCategories']);
 
+// Create New Admin (pending)
 Route::post('/registerAccount', function (Request $request) {
     $validated = $request->validate([
         'admin_name' => 'required|string|max:255',
