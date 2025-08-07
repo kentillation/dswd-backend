@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminController;
 use App\Models\AdminModel;
 
 // ADMIN
