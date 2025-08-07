@@ -18,46 +18,7 @@ use Endroid\QrCode\QrCode;
 
 class AdminController extends Controller
 {
-    public function getAllBenefeciaries()
-    {
-        try {
-            $data = BenefeciaryModel::select(
-                'tbl_benefeciaries.benefeciary_id',
-                'tbl_benefeciaries.first_name',
-                'tbl_benefeciaries.middle_name',
-                'tbl_benefeciaries.last_name',
-                'tbl_benefeciaries.benef_age',
-                'tbl_benefeciaries.address_line1',
-                'tbl_benefeciaries.address_line2',
-                'tbl_benefeciaries.address_line3',
-                'tbl_benefeciaries.contact_number',
-                'tbl_benefeciaries.updated_at',
-                'tbl_gender.gender_id',
-                'tbl_gender.gender_label',
-                'tbl_bloodtype.bloodtype_id',
-                'tbl_bloodtype.bloodtype_label',
-                'tbl_category.category_id',
-                'tbl_category.category_label',
-            )
-                ->join('tbl_gender', 'tbl_benefeciaries.gender_id', '=', 'tbl_gender.gender_id')
-                ->join('tbl_bloodtype', 'tbl_benefeciaries.bloodtype_id', '=', 'tbl_bloodtype.bloodtype_id')
-                ->join('tbl_category', 'tbl_benefeciaries.category_id', '=', 'tbl_category.category_id')
-                ->orderByDesc('tbl_benefeciaries.updated_at')
-                ->get();
-            return response()->json([
-                'status' => true,
-                'message' => $data->isEmpty() ? 'No benefeciary found!' : 'Benefeciaries fetched successfully!',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching benefeciaries!',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
+    // Create benefeciary
     public function saveNewBenefeciary(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -124,7 +85,48 @@ class AdminController extends Controller
         }
     }
 
-    // updateBenefeciary
+    // Read all benefeciaries
+    public function getAllBenefeciaries()
+    {
+        try {
+            $data = BenefeciaryModel::select(
+                'tbl_benefeciaries.benefeciary_id',
+                'tbl_benefeciaries.first_name',
+                'tbl_benefeciaries.middle_name',
+                'tbl_benefeciaries.last_name',
+                'tbl_benefeciaries.benef_age',
+                'tbl_benefeciaries.address_line1',
+                'tbl_benefeciaries.address_line2',
+                'tbl_benefeciaries.address_line3',
+                'tbl_benefeciaries.contact_number',
+                'tbl_benefeciaries.updated_at',
+                'tbl_gender.gender_id',
+                'tbl_gender.gender_label',
+                'tbl_bloodtype.bloodtype_id',
+                'tbl_bloodtype.bloodtype_label',
+                'tbl_category.category_id',
+                'tbl_category.category_label',
+            )
+                ->join('tbl_gender', 'tbl_benefeciaries.gender_id', '=', 'tbl_gender.gender_id')
+                ->join('tbl_bloodtype', 'tbl_benefeciaries.bloodtype_id', '=', 'tbl_bloodtype.bloodtype_id')
+                ->join('tbl_category', 'tbl_benefeciaries.category_id', '=', 'tbl_category.category_id')
+                ->orderByDesc('tbl_benefeciaries.updated_at')
+                ->get();
+            return response()->json([
+                'status' => true,
+                'message' => $data->isEmpty() ? 'No benefeciary found!' : 'Benefeciaries fetched successfully!',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error fetching benefeciaries!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Update benefeciary
     public function updateBenefInfo(Request $request, $benefeciary_id)
     {
         $validated = $request->validate([
@@ -206,160 +208,6 @@ class AdminController extends Controller
         }
     }
 
-    // getBenefModifHistory
-    public function getProductsHistory($branch_id)
-    {
-        try {
-            $data = BenefHistoryModel::select(
-                'tbl_products.product_name',
-                'tbl_products_history.manage_id',
-                'tbl_products_history.description',
-                'tbl_admin.admin_name',
-                'tbl_products_history.created_at',
-            )
-                ->join('tbl_products', 'tbl_products_history.product_id', '=', 'tbl_products.product_id')
-                ->join('tbl_admin', 'tbl_products_history.user_id', '=', 'tbl_admin.admin_id')
-                ->where('tbl_products_history.branch_id', $branch_id)
-                ->orderBy('tbl_products_history.created_at')
-                ->get();
-            return response()->json([
-                'status' => true,
-                'message' => $data->isEmpty() ? 'No products found!' : 'Products history fetched successfully!',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching products!',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // getBenefByDate
-    public function getOrdersByDateType($branchId, Request $request)
-    {
-        try {
-            $shopId = Auth::user()->shop_id;
-            $dateType = $request->query('date_filter');
-
-            $query = BenefeciaryModel::select(
-                'tbl_transaction.*',
-                'tbl_order_status.order_status',
-                'tbl_cashier.cashier_name',
-            )
-                ->join('tbl_order_status', 'tbl_transaction.order_status_id', '=', 'tbl_order_status.order_status_id')
-                ->join('tbl_cashier', 'tbl_transaction.user_id', '=', 'tbl_cashier.cashier_id')
-                ->where('tbl_transaction.shop_id', $shopId)
-                ->where('tbl_transaction.branch_id', $branchId)
-                ->where('tbl_transaction.order_status_id', 3);
-
-            if ($dateType) {
-                switch ($dateType) {
-                    case 1: // Today
-                        $query->whereDate('tbl_transaction.updated_at', now());
-                        break;
-                    case 2: // Yesterday
-                        $query->whereDate('tbl_transaction.updated_at', now()->subDay());
-                        break;
-                    case 3: // Last 7 days
-                        $query->whereDate('tbl_transaction.updated_at', '>=', now()->subDays(7));
-                        break;
-                    case 4: // This week
-                        $query->whereDate('tbl_transaction.updated_at', '>=', now()->startOfWeek());
-                        break;
-                    case 5: // Last 30 days
-                        $query->whereDate('tbl_transaction.updated_at', '>=', now()->subDays(30));
-                        break;
-                    case 6: // This month
-                        $query->whereMonth('tbl_transaction.updated_at', now()->month);
-                        break;
-                    case 7: // Last month
-                        $query->whereMonth('tbl_transaction.updated_at', now()->subMonth()->month);
-                        break;
-                }
-            }
-
-            $data = $query->orderBy('tbl_transaction.created_at', 'desc')->get();
-
-            return response()->json([
-                'status' => true,
-                'message' => $data->isEmpty() ? 'No orders found!' : 'Orders fetched successfully!',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching orders!',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // getBenefCount
-    public function getProductsOnly($branchId)
-    {
-        try {
-            $shopId = Auth::user()->shop_id;
-            $totalProducts = BenefeciaryModel::select(
-                DB::raw('COUNT(tbl_products.product_id) as total_products')
-            )
-                ->where('tbl_products.shop_id', $shopId)
-                ->where('tbl_products.branch_id', $branchId)
-                ->first();
-            return response()->json([
-                'status' => true,
-                'message' => 'Total orders fetched successfully!',
-                'data' => [
-                    'total_products' => $totalProducts->total_products ?? 0
-                ]
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching total orders!',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // Analytics (getBenefByMonth)
-    public function getSalesByMonth($branchId, Request $request)
-    {
-        try {
-            $shopId = Auth::user()->shop_id;
-            $year = $request->query('year', date('Y'));
-            $dateType = $request->query('date_filter');
-            $day = $request->query('day', date('d'));
-            $query = BenefeciaryModel::select(
-                DB::raw('SUM(tbl_transaction.total_due) as total_sales'),
-                DB::raw('MAX(tbl_transaction.updated_at) as updated_at'),
-            )
-                ->where('tbl_transaction.shop_id', $shopId)
-                ->where('tbl_transaction.branch_id', $branchId)
-                ->where('tbl_transaction.order_status_id', 3);
-            if ($dateType) {
-                $query->whereYear('tbl_transaction.updated_at', $year)
-                    ->whereMonth('tbl_transaction.updated_at', $dateType);
-            }
-            $data = $query->groupBy(DB::raw('DATE(tbl_transaction.updated_at)'))
-                ->orderBy('total_sales', 'desc')
-                ->get();
-            return response()->json([
-                'status' => true,
-                'message' => $data->isEmpty() ? 'No sales found!' : 'Sales by month fetched successfully!',
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Error fetching sales!',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    // 
     public function getQRTemp($referenceNumber)
     {
         $folderPath = '../../qr-codes/' . $referenceNumber . '.png';
@@ -372,7 +220,6 @@ class AdminController extends Controller
         ]);
     }
 
-    // getGenders
     public function getGenders()
     {
         try {
@@ -383,7 +230,6 @@ class AdminController extends Controller
         }
     }
 
-    // getBloodTypes
     public function getBloodTypes()
     {
         try {
@@ -394,7 +240,6 @@ class AdminController extends Controller
         }
     }
 
-    // getCategories
     public function getProductCategories()
     {
         try {

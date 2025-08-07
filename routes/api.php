@@ -14,10 +14,6 @@ Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::c
 Route::middleware('auth:sanctum')->post('/admin/save-new-benefeciary', [AdminController::class, 'saveNewBenefeciary']);
 Route::middleware('auth:sanctum')->put('/admin/update-benef/{benefeciary_id}', [AdminController::class, 'updateBenefInfo']);
 Route::middleware('auth:sanctum')->get('/admin/all-benefeciaries', [AdminController::class, 'getAllBenefeciaries']);
-Route::middleware('auth:sanctum')->get('/admin/products-history/{branch_id}', [AdminController::class, 'getProductsHistory']);
-Route::middleware('auth:sanctum')->get('/admin/all-orders/{branchId}', [AdminController::class, 'getOrdersByDateType']);
-Route::middleware('auth:sanctum')->get('/admin/products-only/{branchId}', [AdminController::class, 'getProductsOnly']);
-Route::middleware('auth:sanctum')->get('/admin/sales-by-month/{branchId}', [AdminController::class, 'getSalesByMonth']);
 Route::middleware('auth:sanctum')->get('/admin/get-qr-temp/{referenceNumber}', [AdminController::class, 'getQRTemp']);
 Route::middleware('auth:sanctum')->get('/admin/gender-option', [AdminController::class, 'getGenders']);
 Route::middleware('auth:sanctum')->get('/admin/blood-type-option', [AdminController::class, 'getBloodTypes']);
