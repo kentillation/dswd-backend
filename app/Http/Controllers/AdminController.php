@@ -50,16 +50,19 @@ class AdminController extends Controller
                     'address_line2' => $request->input('address_line2'),
                     'address_line3' => $request->input('address_line3'),
                     'contact_number' => $request->input('contact_number'),
+                    'suffix' => $request->input('suffix'),
                     'gender_id' => $request->input('gender_id'),
                     'bloodtype_id' => $request->input('bloodtype_id'),
                     'category_id' => $request->input('category_id'),
-                    'registration_type_id' => 1,
+                    'registration_type_id' => 1, // Walk-in
+                    'benef_status_id' => 1, // Active
                     'user_id' => $userId,
+                    'reference_number' => $request->input('reference_number'),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
                 $newReference = $benefeciary->reference_number;
-                $qr_text = "https://poofsa-tend.vercel.app/reference/{$newReference}";
+                $qr_text = "https://dswd-uat.vercel.app/reference/{$newReference}";
                 $qr_code = QrCode::create($qr_text)
                     ->setSize(100)
                     ->setMargin(1);
@@ -100,6 +103,9 @@ class AdminController extends Controller
                 'tbl_benefeciaries.address_line3',
                 'tbl_benefeciaries.contact_number',
                 'tbl_benefeciaries.updated_at',
+                'tbl_benefeciaries.suffix',
+                'tbl_benefeciaries.reference_number',
+                'tbl_benefeciaries.benef_status_id',
                 'tbl_gender.gender_id',
                 'tbl_gender.gender_label',
                 'tbl_bloodtype.bloodtype_id',

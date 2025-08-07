@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Aug 06, 2025 at 01:57 AM
+-- Generation Time: Aug 07, 2025 at 04:13 AM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.18
 
@@ -116,14 +116,15 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `personal_access_tokens`
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `expires_at`, `last_used_at`, `created_at`, `updated_at`) VALUES
-(2, 'App\\Models\\AdminModel', 2, 'auth_token', '603c8ea3d8cc023bf06cfefff231aa47c5bfceeff1064c1c572dc8405f6226a5', '[\"*\"]', NULL, '2025-08-05 05:14:19', '2025-08-05 04:58:24', '2025-08-05 05:14:19');
+(2, 'App\\Models\\AdminModel', 2, 'auth_token', '603c8ea3d8cc023bf06cfefff231aa47c5bfceeff1064c1c572dc8405f6226a5', '[\"*\"]', NULL, '2025-08-05 05:14:19', '2025-08-05 04:58:24', '2025-08-05 05:14:19'),
+(10, 'App\\Models\\AdminModel', 2, 'auth_token', '9f66d421f528d94dbca027bbbb75b560d6e966f768ba7e1aec77da8cdfe55462', '[\"*\"]', NULL, '2025-08-07 04:10:39', '2025-08-07 02:42:28', '2025-08-07 04:10:39');
 
 -- --------------------------------------------------------
 
@@ -168,10 +169,13 @@ CREATE TABLE IF NOT EXISTS `tbl_benefeciaries` (
   `address_line3` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `contact_number` varchar(13) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `gender_id` int NOT NULL,
+  `suffix` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `bloodtype_id` int NOT NULL,
   `category_id` int NOT NULL,
   `registration_type_id` int NOT NULL,
+  `benef_status_id` int NOT NULL,
   `user_id` int NOT NULL,
+  `reference_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NOT NULL,
   `updated_at` timestamp NOT NULL,
   PRIMARY KEY (`benefeciary_id`),
@@ -179,14 +183,41 @@ CREATE TABLE IF NOT EXISTS `tbl_benefeciaries` (
   KEY `blood_type_id` (`bloodtype_id`),
   KEY `category_id` (`category_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbl_benefeciaries`
 --
 
-INSERT INTO `tbl_benefeciaries` (`benefeciary_id`, `first_name`, `middle_name`, `last_name`, `benef_age`, `address_line1`, `address_line2`, `address_line3`, `contact_number`, `gender_id`, `bloodtype_id`, `category_id`, `registration_type_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(3, 'Juan', 'Tamad', 'DelaCruz', 20, 'Prk. Paghidaet', 'Brgy. Pob II', 'Sagay City', '987653421', 2, 2, 2, 1, 2, '2025-08-05 09:35:24', '2025-08-05 09:35:24');
+INSERT INTO `tbl_benefeciaries` (`benefeciary_id`, `first_name`, `middle_name`, `last_name`, `benef_age`, `address_line1`, `address_line2`, `address_line3`, `contact_number`, `gender_id`, `suffix`, `bloodtype_id`, `category_id`, `registration_type_id`, `benef_status_id`, `user_id`, `reference_number`, `created_at`, `updated_at`) VALUES
+(1, 'Joseph', 'Protacio', 'Rizal', 25, 'Purok Kamatis', 'Barangay Pob. II', 'Sagay City', '01234567890', 3, 'II', 2, 1, 1, 1, 2, '114928619302', '2025-08-07 03:19:48', '2025-08-07 03:39:14'),
+(2, 'Juan', 'Tamad', 'Dela Cruz', 65, 'Purok Pag-asa', 'Baragay Plaridel', 'Sagay City', '01234565412', 2, NULL, 3, 2, 1, 1, 2, '526253728085', '2025-08-07 03:44:52', '2025-08-07 03:44:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_benef_history_modif`
+--
+
+DROP TABLE IF EXISTS `tbl_benef_history_modif`;
+CREATE TABLE IF NOT EXISTS `tbl_benef_history_modif` (
+  `benef_history_modif_id` int NOT NULL AUTO_INCREMENT,
+  `benefeciary_id` int NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `manage_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NOT NULL,
+  PRIMARY KEY (`benef_history_modif_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `tbl_benef_history_modif`
+--
+
+INSERT INTO `tbl_benef_history_modif` (`benef_history_modif_id`, `benefeciary_id`, `description`, `manage_id`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, 1, 'First name: From [Jose] To [Joseph].', 2, 2, '2025-08-07 03:37:32', '2025-08-07 03:37:32'),
+(2, 1, 'Gender: From [Male] To [Prefer not to say].', 2, 2, '2025-08-07 03:39:14', '2025-08-07 03:39:14');
 
 -- --------------------------------------------------------
 
@@ -262,9 +293,7 @@ CREATE TABLE IF NOT EXISTS `tbl_category` (
 
 INSERT INTO `tbl_category` (`category_id`, `category_label`, `created_at`, `updated_at`) VALUES
 (1, 'PWD', '2025-08-05 06:25:26', '2025-08-05 06:25:26'),
-(2, 'Senior Citizen', '2025-08-05 06:25:26', '2025-08-05 06:25:26'),
-(3, 'Others', '2025-08-05 06:25:26', '2025-08-05 06:25:26'),
-(4, '-', '2025-08-05 06:25:26', '2025-08-05 06:25:26');
+(2, 'Senior Citizen', '2025-08-05 06:25:26', '2025-08-05 06:25:26');
 
 -- --------------------------------------------------------
 
